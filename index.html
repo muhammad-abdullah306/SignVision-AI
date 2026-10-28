@@ -1,0 +1,146 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SignVision AI | Sign Language Recognition</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f4f7fc;color:#17243c}
+nav{background:#fff;padding:20px 8%;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e5eaf3}
+.logo{font-size:24px;font-weight:800;color:#1769e0}
+.logo span{color:#18243a}
+nav a{color:#53627a;text-decoration:none;font-size:14px}
+.hero{text-align:center;padding:65px 20px 35px;background:linear-gradient(135deg,#e9f2ff,#f8fbff)}
+.tag{color:#1769e0;font-size:13px;font-weight:bold;letter-spacing:1px}
+h1{font-size:clamp(32px,5vw,50px);margin:18px 0 12px}
+h1 span{color:#1769e0}
+.hero p{color:#66748a;line-height:1.7;max-width:600px;margin:auto}
+main{max-width:850px;margin:35px auto;padding:0 18px}
+.panel{background:white;border:1px solid #e4eaf3;border-radius:20px;padding:30px;box-shadow:0 12px 35px #18365b0b}
+h2{margin-top:0;font-size:23px}
+.hint{color:#718096;font-size:14px;line-height:1.6}
+.upload{margin-top:22px;border:2px dashed #b9cdeb;border-radius:16px;padding:35px 15px;text-align:center;background:#f9fbff}
+.upload .symbol{font-size:40px}
+input{max-width:100%;margin:18px auto;display:block}
+button{border:0;border-radius:10px;background:#1769e0;color:white;padding:15px 24px;font-size:15px;font-weight:bold;cursor:pointer}
+button:hover{background:#1055bd}
+button:disabled{opacity:.6;cursor:wait}
+#preview{display:none;max-width:220px;max-height:220px;object-fit:contain;margin:18px auto;border-radius:12px}
+.actions{text-align:center;margin-top:20px}
+#status{text-align:center;margin-top:18px;color:#53627a;overflow-wrap:anywhere}
+.result{display:none;margin-top:24px;background:#edf5ff;border-radius:14px;padding:24px;text-align:center}
+.result small{color:#5d6e86}
+#letter{font-size:42px;font-weight:800;color:#1769e0;margin:12px}
+footer{text-align:center;color:#7b8799;font-size:13px;padding:30px}
+@media(max-width:600px){nav{padding:17px 5%}.panel{padding:20px}.hero{padding-top:45px}}
+</style>
+</head>
+<body>
+<nav>
+  <div class="logo">SignVision <span>AI</span></div>
+  <a href="#recognize">Sign Recognition</a>
+</nav>
+
+<section class="hero">
+  <div class="tag">AI-POWERED SIGN RECOGNITION</div>
+  <h1>Understand Signs.<br><span>Connect People.</span></h1>
+  <p>Upload an image of an ASL hand gesture and let our deep learning model predict the sign.</p>
+</section>
+
+<main id="recognize">
+  <div class="panel">
+    <h2>Recognize a Hand Sign</h2>
+    <p class="hint">Choose a clear JPG, PNG, or WEBP image showing one hand gesture.</p>
+
+    <div class="upload">
+      <div class="symbol">✋</div>
+      <strong>Upload your hand-sign image</strong>
+      <p class="hint">Select an image from your device</p>
+      <input type="file" id="image" accept="image/jpeg,image/png,image/webp">
+      <img id="preview" alt="Selected hand sign preview">
+    </div>
+
+    <div class="actions">
+      <button id="predict" onclick="predictSign()">Predict Sign</button>
+    </div>
+
+    <div id="status" role="status"></div>
+
+    <div class="result" id="result">
+      <small>PREDICTED SIGN</small>
+      <div id="letter">A</div>
+      <strong id="confidence"></strong>
+    </div>
+  </div>
+</main>
+
+<footer>SignVision AI · Deep Learning Project</footer>
+
+<script>
+const input = document.getElementById("image");
+const preview = document.getElementById("preview");
+const statusText = document.getElementById("status");
+const result = document.getElementById("result");
+const button = document.getElementById("predict");
+
+input.addEventListener("change", () => {
+  result.style.display = "none";
+  statusText.textContent = "";
+  const file = input.files[0];
+  if (!file) {
+    preview.style.display = "none";
+    return;
+  }
+  if (file.size > 10 * 1024 * 1024) {
+    statusText.textContent = "Image must be smaller than 10 MB.";
+    input.value = "";
+    preview.style.display = "none";
+    return;
+  }
+  preview.src = URL.createObjectURL(file);
+  preview.style.display = "block";
+});
+
+async function predictSign() {
+  const file = input.files[0];
+  if (!file) {
+    statusText.textContent = "Please choose an image first.";
+    return;
+  }
+
+  button.disabled = true;
+  statusText.textContent = "AI is analyzing your image...";
+  result.style.display = "none";
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  try {
+    const response = await fetch("http://127.0.0.1:8000/predict", {
+      method: "POST",
+      body: formData
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.detail || "Prediction failed.");
+    }
+
+    document.getElementById("letter").textContent = data.predicted_sign;
+    document.getElementById("confidence").textContent =
+      "Confidence: " + data.confidence + "%";
+    result.style.display = "block";
+    statusText.textContent = "Prediction complete.";
+  } catch (error) {
+    statusText.textContent =
+      "Could not connect to AI backend. Make sure the backend is running. " +
+      error.message;
+  } finally {
+    button.disabled = false;
+  }
+}
+</script>
+</body>
+</html>
