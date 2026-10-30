@@ -321,7 +321,6 @@ footer {
     </p>
 
     <div class="upload">
-
       <div class="symbol">✋</div>
 
       <strong>Upload your hand-sign image</strong>
@@ -335,7 +334,6 @@ footer {
       >
 
       <img id="preview" alt="Selected hand sign preview">
-
     </div>
 
     <div class="actions">
@@ -347,13 +345,9 @@ footer {
     <div id="status" role="status"></div>
 
     <div class="result" id="result">
-
       <small>PREDICTED SIGN</small>
-
       <div id="letter">A</div>
-
       <strong id="confidence"></strong>
-
     </div>
 
   </div>
@@ -361,7 +355,6 @@ footer {
 
 <!-- Project Resources -->
 <section class="resources" id="project-resources">
-
   <div class="panel">
 
     <h2>Project Resources</h2>
@@ -375,8 +368,7 @@ footer {
 
       <!-- Dataset and Code -->
       <div class="resource-card">
-
-        <h3>Dataset & Code Details</h3>
+        <h3>Dataset &amp; Code Details</h3>
 
         <p>
           Explore the project source code, trained model files,
@@ -389,7 +381,7 @@ footer {
           target="_blank"
           rel="noopener noreferrer"
         >
-          View Dataset & Code
+          View Dataset &amp; Code
         </a>
 
         <a
@@ -400,12 +392,10 @@ footer {
         >
           Download ASL Dataset
         </a>
-
       </div>
 
       <!-- Model Demonstration -->
       <div class="resource-card">
-
         <h3>Model Predictions / Demonstration</h3>
 
         <p>
@@ -416,12 +406,10 @@ footer {
         <a class="resource-link" href="#recognize">
           Try Model Demo
         </a>
-
       </div>
 
       <!-- Project Report -->
       <div class="resource-card">
-
         <h3>Project Report</h3>
 
         <p>
@@ -435,51 +423,45 @@ footer {
         >
           Download Project Report
         </a>
-
       </div>
 
       <!-- Presentation and YouTube -->
       <div class="resource-card">
-
-        <h3>Presentation & YouTube Video</h3>
+        <h3>Presentation &amp; YouTube Video</h3>
 
         <p>
           Open the project presentation or watch the project
           demonstration video.
         </p>
 
-        <!-- Replace these placeholder links with your actual URLs -->
-
         <a
-          class="resource-link"
-          href="YOUR_PRESENTATION_LINK"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          View Presentation
-        </a>
+  class="resource-link"
+  href="SignVision-AI.pptx"
+  target="_blank"
+  rel="noopener noreferrer"
+>
+  View Presentation
+</a>
 
         <br>
 
         <a
           class="resource-link secondary"
-          href="YOUR_YOUTUBE_LINK"
+          href="https://youtu.be/Fv7TCbgCf78"
           target="_blank"
           rel="noopener noreferrer"
         >
           Watch YouTube Video
         </a>
-
       </div>
 
-      <!-- GitHub -->
+      <!-- GitHub and LinkedIn -->
       <div class="resource-card">
-
-        <h3>GitHub Repository</h3>
+        <h3>GitHub &amp; LinkedIn</h3>
 
         <p>
-          Visit the official project repository to explore
-          the available source code and project files.
+          Visit the official project repository and my LinkedIn
+          profile to explore the project and professional profile.
         </p>
 
         <a
@@ -491,6 +473,14 @@ footer {
           Open GitHub
         </a>
 
+        <a
+          class="resource-link secondary"
+          href="https://www.linkedin.com/in/muhammad-abdullah-908a80447/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Visit My LinkedIn
+        </a>
       </div>
 
     </div>
@@ -509,7 +499,6 @@ const result = document.getElementById("result");
 const button = document.getElementById("predict");
 
 input.addEventListener("change", () => {
-
   result.style.display = "none";
   statusText.textContent = "";
 
@@ -521,44 +510,32 @@ input.addEventListener("change", () => {
   }
 
   if (file.size > 10 * 1024 * 1024) {
-
-    statusText.textContent =
-      "Image must be smaller than 10 MB.";
-
+    statusText.textContent = "Image must be smaller than 10 MB.";
     input.value = "";
     preview.style.display = "none";
-
     return;
   }
 
   preview.src = URL.createObjectURL(file);
   preview.style.display = "block";
-
 });
 
 async function predictSign() {
-
   const file = input.files[0];
 
   if (!file) {
-    statusText.textContent =
-      "Please choose an image first.";
+    statusText.textContent = "Please choose an image first.";
     return;
   }
 
   button.disabled = true;
-
-  statusText.textContent =
-    "AI is analyzing your image...";
-
+  statusText.textContent = "AI is analyzing your image...";
   result.style.display = "none";
 
   const formData = new FormData();
-
   formData.append("file", file);
 
   try {
-
     const response = await fetch(
       "http://127.0.0.1:8000/predict",
       {
@@ -570,9 +547,7 @@ async function predictSign() {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(
-        data.detail || "Prediction failed."
-      );
+      throw new Error(data.detail || "Prediction failed.");
     }
 
     document.getElementById("letter").textContent =
@@ -582,20 +557,16 @@ async function predictSign() {
       "Confidence: " + data.confidence + "%";
 
     result.style.display = "block";
-
     statusText.textContent = "Prediction complete.";
 
   } catch (error) {
-
     statusText.textContent =
       "Could not connect to AI backend. " +
       "Make sure the backend is running. " +
       error.message;
 
   } finally {
-
     button.disabled = false;
-
   }
 }
 </script>
